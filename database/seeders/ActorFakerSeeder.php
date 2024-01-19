@@ -30,6 +30,7 @@ class ActorFakerSeeder extends Seeder
                 "country" => $faker->country(),
                 "img_url" => $faker->imageUrl(),
                 "created_at" => now()->setTimezone('Europe/Madrid'),
+                //hola
 
                 
             ]
