@@ -25,7 +25,7 @@ class FilmFakerSeeder extends Seeder
                 "id" => $i + 1,
         //Creamos descuentos de hasta el 100% con dos decimales
                 "name" => $faker->name(),
-                "year" => $faker->year(),
+                "year" => $faker->numberBetween(1900,2024),
                 "genre" => $faker->randomElement(['Drama', 'Action', 'Terror', 'Comedy']),
                 "country" => $faker->country(),
                 "duration" => $faker->numberBetween(30, 300),
