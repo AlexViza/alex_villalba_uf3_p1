@@ -19,6 +19,22 @@
         <li><a href="/filmout/films">Pelis</a></li>
         <li><a href="/filmout/sortFilms">Pelis ordenadas por año</a></li>
         <li><a href="/filmout/countFilms">Contar pelis</a></li>
+        <li><a href="/actorout/actors">Listar Actores</a></li>
+        <li><a href="/actorout/countActors">Contar Actores</a></li>
+        
+
+        <form  action="{{ route('listActorsByDecade') }}" method="get">
+        {{ csrf_field() }}
+        <select id="decades" name="decades">
+            <option value="1970">1970 - 1979</option>
+            <option value="1980">1980 - 1989</option>
+            <option value="1990">1990 - 1999</option>
+            <option value="2000">2000 - 2009</option>
+            <option value="2010">2010 - 2019</option>
+            <option value="2020">2020 - 2029</option>
+        </select>
+        <input type="submit" value="Enviar">
+        </form>
     </ul>
 
     <h1 class="text-center mt-4">Añadir Pelicula</h1>
