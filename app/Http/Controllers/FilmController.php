@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class FilmController extends Controller
 {
@@ -11,13 +12,16 @@ class FilmController extends Controller
      */
     public static function readFilms(): array {
         $filmsJson = Storage::get('public/films.json');
-        $films = json_decode($filmsJson, true);
+        $films1 = json_decode($filmsJson, true);
+        $films2 = DB::table('films')->select('name', 'year', 'genre', 'country','duration', 'img_url')->get();
+        $arrayFilms = json_decode(json_encode($films2), true);
+        $films = array_merge($films1, $arrayFilms);
 
-        // Verifica si la decodificación fue exitosa
-        if (json_last_error() != JSON_ERROR_NONE) {
-            // Maneja el error de decodificación aquí si es necesario
-            throw new \RuntimeException('Error decoding JSON file');
-        }
+        // // Verifica si la decodificación fue exitosa
+        // if (json_last_error() != JSON_ERROR_NONE) {
+        //     // Maneja el error de decodificación aquí si es necesario
+        //     throw new \RuntimeException('Error decoding JSON file');
+        // }
 
         return $films;
     }
@@ -39,6 +43,7 @@ class FilmController extends Controller
             if ($film['year'] < $year)
                 $old_films[] = $film;
         }
+        dd($old_films);
         return view('films.list', ["films" => $old_films, "title" => $title]);
     }
 
@@ -157,9 +162,35 @@ class FilmController extends Controller
         return view('films.count', ["films" => $films, "title" => $title]);
     }
 
-    public function createFilm() {
+    // public function createFilm() {
         
+    //     $filmExis = FilmController::isFilm($_POST["name"]);
+    //     if ($filmExis){
+    //         return view('welcome', ["Error" => "Sorry but this film exists"]);
+    //     }else{
+    //         $films = FilmController::readFilms();
+    //         $film = [
+    //             "name" => $_POST["name"], 
+    //             "country" => $_POST["country"], 
+    //             "duration" => $_POST["duration"], 
+    //             "year" => $_POST["year"], 
+    //             "genre" => $_POST["genre"], 
+    //             "img_url" => $_POST["url"]
+    //         ];
+    //         $films[] = $film; 
+    //         $jsonFilm = json_encode($films, JSON_PRETTY_PRINT);
+    //         Storage::put('public/films.json', $jsonFilm);
+    //         $title = "Listado de Pelis";
+    //         return view('films.list', ["films" => $films, "title" => $title]);
+
+    //     }
+        
+    // }
+    public function createFilm() {
+        $title = "Listado de Pelis";
         $filmExis = FilmController::isFilm($_POST["name"]);
+
+        $source = env('DATA_SRC', 'database');
         if ($filmExis){
             return view('welcome', ["Error" => "Sorry but this film exists"]);
         }else{
@@ -172,11 +203,27 @@ class FilmController extends Controller
                 "genre" => $_POST["genre"], 
                 "img_url" => $_POST["url"]
             ];
-            $films[] = $film; 
-            $jsonFilm = json_encode($films, JSON_PRETTY_PRINT);
-            Storage::put('public/films.json', $jsonFilm);
-            $title = "Listado de Pelis";
-            return view('films.list', ["films" => $films, "title" => $title]);
+            if($this->isFilm($film)){
+                return view('welcome', ["error"=>'movie already exist']);
+            }else{
+                if($source === 'json'){
+                    $films[]= $film;
+                    Storage::put("/public/films.json", json_encode($films));
+                }else{
+                    DB::table('films')->insert($film);
+                }
+                $films = FilmController::readFilms();
+                return view('films.list', ["films" => $films, "title" => $title]);
+                
+            }
+
+
+
+            // $films[] = $film; 
+            // $jsonFilm = json_encode($films, JSON_PRETTY_PRINT);
+            // Storage::put('public/films.json', $jsonFilm);
+             //$title = "Listado de Pelis";
+            //return view('films.list', ["films" => $films, "title" => $title]);
 
         }
 
