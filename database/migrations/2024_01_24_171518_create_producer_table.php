@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('producer', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 100);
+            $table->unsignedBigInteger('film_id');
             $table->foreign('film_id')->references('id')->on('films')->onDelete('cascade');
             $table->timestamps();
 
