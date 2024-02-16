@@ -35,7 +35,7 @@ class ProducerController extends Controller
     {
         
 
-        $title = "Listado de todos los producers";
+        $title = "Listado de todos los productores";
         $producers = ProducerController::readProducers();
 
         //if year and genre are null
