@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Film;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +14,8 @@ class FilmController extends Controller
     public static function readFilms(): array {
         $filmsJson = Storage::get('public/films.json');
         $films1 = json_decode($filmsJson, true);
-        $films2 = DB::table('films')->select('name', 'year', 'genre', 'country','duration', 'img_url')->get();
+        //$films2 = DB::table('films')->select('name', 'year', 'genre', 'country','duration', 'img_url')->get();
+        $films2 = Film::all();
         $arrayFilms = json_decode(json_encode($films2), true);
         $films = array_merge($films1, $arrayFilms);
 
@@ -195,14 +197,14 @@ class FilmController extends Controller
             return view('welcome', ["Error" => "Sorry but this film exists"]);
         }else{
             $films = FilmController::readFilms();
-            $film = [
+            $film = Film::create ([
                 "name" => $_POST["name"], 
                 "country" => $_POST["country"], 
                 "duration" => $_POST["duration"], 
                 "year" => $_POST["year"], 
                 "genre" => $_POST["genre"], 
-                "img_url" => $_POST["url"]
-            ];
+                "img_url" => $_POST["url"],
+            ]);
             if($this->isFilm($film)){
                 return view('welcome', ["error"=>'movie already exist']);
             }else{
@@ -210,7 +212,8 @@ class FilmController extends Controller
                     $films[]= $film;
                     Storage::put("/public/films.json", json_encode($films));
                 }else{
-                    DB::table('films')->insert($film);
+                    //DB::table('films')->insert($film);
+                    //Film::create($film);
                 }
                 $films = FilmController::readFilms();
                 return view('films.list', ["films" => $films, "title" => $title]);

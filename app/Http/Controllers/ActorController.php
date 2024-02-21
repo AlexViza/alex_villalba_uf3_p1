@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\Actor;
 
 
 class ActorController extends Controller
@@ -15,7 +16,8 @@ class ActorController extends Controller
     public static function readActors() {
         
         // $actors = DB::table('actors')->get()->toArray();
-        $actors = DB::table('actors')->select('name', 'surname', 'birtdate', 'country', 'img_url')->get();
+        //$actors = DB::table('actors')->select('name', 'surname', 'birtdate', 'country', 'img_url')->get();
+        $actors = Actor::where('name', 'surname', 'birtdate', 'country', 'img_url')->get();
         $arrayActors = json_decode(json_encode($actors), true);
         
         
@@ -53,7 +55,8 @@ class ActorController extends Controller
     $title = "Listado de Actores por Década";
     
     if (is_null($birtdate)) {
-        $actors = DB::table('actors')->get()->toArray();
+        //$actors = DB::table('actors')->get()->toArray();
+        $actors = ActorController::readActors();
     } else {
         $start_year = $birtdate;
         $end_year = $birtdate + 9;
@@ -90,7 +93,9 @@ class ActorController extends Controller
 
     public function deleteActor($id)
 {
-    $actorDeleted = DB::table('actors')->where('id', $id)->delete();
+    //$actorDeleted = DB::table('actors')->where('id', $id)->delete();
+    $actorDeleted = Actor::find($id); // Obtener el usuario con ID = 1
+    $actorDeleted->delete();
     if($actorDeleted){
         return response()->json(['action' => $actorDeleted, 'status' => 'True']);
     }else{
